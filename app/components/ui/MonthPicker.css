@@ -1,0 +1,30 @@
+.react-datepicker__month.react-datepicker__monthPicker {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.react-datepicker__month-wrapper {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.react-datepicker__month-text {
+  flex: 1;
+}
+
+.react-datepicker__month-text:focus {
+  @apply outline-none;
+}
+
+.react-datepicker__aria-live {
+  position: absolute;
+  clip-path: circle(0);
+  border: 0;
+  height: 1px;
+  margin: -1px;
+  overflow: hidden;
+  padding: 0;
+  width: 1px;
+  white-space: nowrap;
+}
