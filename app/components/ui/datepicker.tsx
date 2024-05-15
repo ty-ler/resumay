@@ -1,8 +1,8 @@
 import { cn } from '@/lib/utils';
 import { ClassValue } from 'clsx';
-import { format as dateFormat } from 'date-fns';
+import { format as dateFormat, isValid, parse } from 'date-fns';
 import { CalendarIcon } from 'lucide-react';
-import { useState } from 'react';
+import { ChangeEvent, useState } from 'react';
 import MonthPicker from './MonthPicker';
 import { Button } from './button';
 import { Calendar } from './calendar';
@@ -10,11 +10,10 @@ import { Input } from './input';
 import { Popover, PopoverContent, PopoverTrigger } from './popover';
 
 type DatePickerProps = {
+  onSelect: (date: Date | undefined) => void;
   type?: 'day' | 'month';
   date?: Date;
   id?: string;
-  format?: string;
-  onSelect?: (date: Date) => void;
   dayPickerClassName?: ClassValue;
   monthPickerClassName?: ClassValue;
 };
@@ -23,41 +22,59 @@ export default function DatePicker({
   type = 'day',
   date,
   id,
-  format,
   onSelect,
   dayPickerClassName,
   monthPickerClassName,
 }: DatePickerProps) {
+  const format = type === 'day' ? 'MM/dd/yyyy' : 'MM/yyyy';
+
   const [_date, setDate] = useState(date);
   const [popoverOpen, setPopoverOpen] = useState(false);
+  const [inputFocused, setInputFocused] = useState(false);
+  const [inputValue, setInputValue] = useState(
+    _date ? dateFormat(_date, format) : ''
+  );
 
-  format = format ?? 'MM/yyyy';
+  console.log(_date);
 
   const handleSelect = (day: Date | undefined) => {
-    setDate(day);
-
-    if (onSelect && day) {
-      onSelect(day);
+    if (day) {
+      setDate(day);
+      setInputValue(dateFormat(day, format));
+    } else {
+      setDate(undefined);
+      setInputValue('');
     }
+
+    onSelect(day);
   };
 
-  const handleClickInput = (e: React.MouseEvent) => {
-    setPopoverOpen(true);
+  const showFocused = () => popoverOpen || inputFocused;
+
+  const handleChangeInput = (e: ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    if (!value) {
+      setDate(undefined);
+      onSelect(undefined);
+      setInputValue(value);
+      return;
+    }
+
+    const parsedDate = parse(value, format, new Date());
+    if (isValid(parsedDate)) {
+      setDate(parsedDate);
+      onSelect(parsedDate);
+    }
+
+    setInputValue(e.target.value);
   };
 
   const handleFocusInput = () => {
-    setPopoverOpen(true);
+    setInputFocused(true);
   };
 
-  const handleBlurInput = () => {};
-
-  const showFocused = () => popoverOpen;
-  const displayedValue = () => {
-    if (!_date) {
-      return '';
-    }
-
-    return dateFormat(_date, format);
+  const handleBlurInput = () => {
+    setInputFocused(false);
   };
 
   return (
@@ -68,12 +85,11 @@ export default function DatePicker({
     >
       <Input
         id={id ?? ''}
-        value={displayedValue()}
+        value={inputValue}
         className="!border-none !ring-0 !ring-offset-0 rounded-none"
-        onClick={handleClickInput}
+        onChange={handleChangeInput}
         onFocus={handleFocusInput}
         onBlur={handleBlurInput}
-        readOnly
       />
       <Popover modal open={popoverOpen} onOpenChange={setPopoverOpen}>
         <PopoverTrigger asChild>
