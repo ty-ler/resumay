@@ -19,7 +19,22 @@ import {
   verticalListSortingStrategy,
 } from '@dnd-kit/sortable';
 import { ClassValue } from 'clsx';
-import { ReactNode, useMemo, useState } from 'react';
+import { ReactNode, createContext, useContext, useMemo, useState } from 'react';
+
+export type SortableContainerContext<ActiveItem = SortableContainerItem> = {
+  activeItem?: ActiveItem;
+};
+
+const SortableContainerContext = createContext<SortableContainerContext>({
+  activeItem: undefined,
+});
+
+export const useSortableContainerContext = <
+  ActiveItem = SortableContainerItem,
+>() =>
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
+  useContext<SortableContainerContext<ActiveItem>>(SortableContainerContext);
 
 export type SortableContainerItem =
   | UniqueIdentifier
@@ -103,30 +118,36 @@ export function SortableContainer({
   };
 
   return (
-    <DndContext
-      sensors={sensors}
-      collisionDetection={closestCorners}
-      onDragStart={handleDragStart}
-      onDragMove={handleDragMove}
-      onDragOver={handleDragOver}
-      onDragCancel={handleDragCancel}
-      onDragEnd={handleDragEnd}
+    <SortableContainerContext.Provider
+      value={{
+        activeItem,
+      }}
     >
-      <SortableContext items={items} strategy={strategy}>
-        <div
-          className={cn(
-            itemsContainerClassName
-              ? itemsContainerClassName
-              : 'flex flex-col gap-4'
-          )}
-        >
-          {children}
-        </div>
+      <DndContext
+        sensors={sensors}
+        collisionDetection={closestCorners}
+        onDragStart={handleDragStart}
+        onDragMove={handleDragMove}
+        onDragOver={handleDragOver}
+        onDragCancel={handleDragCancel}
+        onDragEnd={handleDragEnd}
+      >
+        <SortableContext items={items} strategy={strategy}>
+          <div
+            className={cn(
+              itemsContainerClassName
+                ? itemsContainerClassName
+                : 'flex flex-col gap-4'
+            )}
+          >
+            {children}
+          </div>
 
-        <DragOverlay>
-          {activeItem ? renderDragOverlay(activeItem) : undefined}
-        </DragOverlay>
-      </SortableContext>
-    </DndContext>
+          <DragOverlay>
+            {activeItem ? renderDragOverlay(activeItem) : undefined}
+          </DragOverlay>
+        </SortableContext>
+      </DndContext>
+    </SortableContainerContext.Provider>
   );
 }

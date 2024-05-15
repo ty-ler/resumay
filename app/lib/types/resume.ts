@@ -20,6 +20,7 @@ export interface EducationEntry {
 }
 
 export interface WorkExperienceEntry {
+  id: string;
   companyName: string;
   roleTitle: string;
   location: string;

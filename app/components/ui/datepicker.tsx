@@ -35,8 +35,6 @@ export default function DatePicker({
     _date ? dateFormat(_date, format) : ''
   );
 
-  console.log(_date);
-
   const handleSelect = (day: Date | undefined) => {
     if (day) {
       setDate(day);

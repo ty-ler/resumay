@@ -9,7 +9,7 @@ export type Route = {
 export const ROUTES: Route[] = [
   { path: '/editor/profile', label: 'Profile' },
   { path: '/editor/education', label: 'Education' },
-  { path: '/editor/work', label: 'Work' },
+  { path: '/editor/work', label: 'Work Experience' },
   { path: '/editor/skills', label: 'Skills' },
   { path: '/editor/projects', label: 'Projects' },
 ];

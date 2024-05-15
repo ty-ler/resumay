@@ -6,7 +6,7 @@ import { DragEndEvent } from '@dnd-kit/core';
 import { hasSortableData } from '@dnd-kit/sortable';
 import { Plus } from 'lucide-react';
 import EditorSection from '../EditorSection';
-import EditorEducationEntry from './EditorEducationEntry';
+import EditorEducationListEntry from './EditorEducationListEntry';
 
 export default function EditorEducation() {
   const store = useEducationStore();
@@ -44,19 +44,28 @@ export default function EditorEducation() {
 
       <SortableContainer
         items={entries}
-        renderDragOverlay={(item: EducationEntry) => (
-          <EditorEducationEntry
-            entry={item}
+        renderDragOverlay={(entry: EducationEntry) => (
+          <EditorEducationListEntry
+            entry={entry}
             index={0}
-            className="border-primary"
-            buttonClassName="text-primary cursor-grabbing"
-          />
+          ></EditorEducationListEntry>
+          // <EditorEducationEntry
+          //   entry={item}
+          //   index={0}
+          //   className="border-primary"
+          //   buttonClassName="text-primary cursor-grabbing"
+          // />
         )}
         onDragEnd={handleDragEnd}
-        itemsContainerClassName="flex flex-col gap-6 h-full transition"
+        itemsContainerClassName="flex flex-col gap-4 h-full transition"
       >
         {entries.map((entry, index) => (
-          <EditorEducationEntry entry={entry} index={index} key={entry.id} />
+          <EditorEducationListEntry
+            entry={entry}
+            index={index}
+            key={entry.id}
+          />
+          // <EditorEducationEntry entry={entry} index={index} key={entry.id} />
         ))}
       </SortableContainer>
     </EditorSection>

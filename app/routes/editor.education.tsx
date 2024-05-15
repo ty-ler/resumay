@@ -1,5 +1,5 @@
-import EditorEducation from '@/components/editor/education/EditorEducation';
+import { Outlet } from '@remix-run/react';
 
 export default function EditorEducationPage() {
-  return <EditorEducation />;
+  return <Outlet />;
 }

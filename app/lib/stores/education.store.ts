@@ -10,8 +10,8 @@ export type EducationState = {
 export type EducationActions = {
   setEducation(education: EducationSection): void;
   addSection(): void;
-  removeSection(index: number): void;
   moveSection(from: number, to: number): void;
+  removeSection(index: number): void;
   setSchoolName(index: number, schoolName: string): void;
   setSchoolLocation(index: number, location: string): void;
   setSchoolDegree(index: number, degree: string): void;
@@ -23,18 +23,20 @@ export type EducationActions = {
 
 export type EducationStore = EducationState & EducationActions;
 
-export const useEducationStore = create<EducationStore>((set) => ({
-  education: {
-    entries: [],
-  },
-  setEducation: (education) =>
-    set((state) => ({
-      ...state,
-      education,
-    })),
-  addSection: () =>
-    set(
-      produce((state: EducationState) => {
+export const useEducationStore = create<EducationStore>((set) => {
+  const modify = (modify: (state: EducationState) => void) =>
+    set(produce((state) => modify(state)));
+
+  return {
+    education: {
+      entries: [],
+    },
+    setEducation: (education) =>
+      modify((state) => {
+        state.education = education;
+      }),
+    addSection: () =>
+      modify((state) => {
         state.education.entries.push({
           id: crypto.randomUUID(),
           schoolName: '',
@@ -43,81 +45,65 @@ export const useEducationStore = create<EducationStore>((set) => ({
           major: '',
           dateRange: {},
         });
-      })
-    ),
-  removeSection: (index) =>
-    set(
-      produce((state: EducationState) => {
-        state.education.entries.splice(index, 1);
-      })
-    ),
-  moveSection: (from, to) =>
-    set(
-      produce((state: EducationState) => {
+      }),
+    moveSection: (from, to) =>
+      modify((state: EducationState) => {
         moveArrayElement(state.education.entries, from, to);
-      })
-    ),
-  setSchoolName: (index, schoolName) =>
-    set(
-      produce((state: EducationState) => {
+      }),
+    removeSection: (index) =>
+      modify((state: EducationState) => {
+        state.education.entries.splice(index, 1);
+      }),
+    setSchoolName: (index, schoolName) =>
+      modify((state: EducationState) => {
         const entry = state.education.entries[index];
         if (entry) {
           entry.schoolName = schoolName;
         }
-      })
-    ),
-  setSchoolLocation: (index, location) =>
-    set(
-      produce((state: EducationState) => {
+      }),
+    setSchoolLocation: (index, location) =>
+      modify((state: EducationState) => {
         const entry = state.education.entries[index];
         if (entry) {
           entry.location = location;
         }
-      })
-    ),
-  setSchoolDegree: (index, degree) =>
-    set(
-      produce((state: EducationState) => {
-        const entry = state.education.entries[index];
-        if (entry) {
-          entry.degree = degree;
-        }
-      })
-    ),
-  setSchoolMajor: (index, major) =>
-    set(
-      produce((state: EducationState) => {
+      }),
+    setSchoolDegree: (index, degree) =>
+      set(
+        produce((state: EducationState) => {
+          const entry = state.education.entries[index];
+          if (entry) {
+            entry.degree = degree;
+          }
+        })
+      ),
+    setSchoolMajor: (index, major) =>
+      modify((state: EducationState) => {
         const entry = state.education.entries[index];
         if (entry) {
           entry.major = major;
         }
-      })
-    ),
-  setSchoolGPA: (index, gpa) =>
-    set(
-      produce((state: EducationState) => {
+      }),
+    setSchoolGPA: (index, gpa) =>
+      modify((state: EducationState) => {
         const entry = state.education.entries[index];
         if (entry) {
           entry.gpa = gpa;
         }
-      })
-    ),
-  setSchoolStartDate: (index, date) =>
-    set(
-      produce((state: EducationState) => {
+      }),
+    setSchoolStartDate: (index, date) =>
+      modify((state: EducationState) => {
         const entry = state.education.entries[index];
         if (entry) {
-          entry.dateRange.startDate = date;
+          entry.dateRange.startDate = date?.toISOString();
         }
-      })
-    ),
-  setSchoolEndDate: (index, date) =>
-    set(
-      produce((state: EducationState) => {
+      }),
+    setSchoolEndDate: (index, date) =>
+      modify((state: EducationState) => {
         const entry = state.education.entries[index];
         if (entry) {
-          entry.dateRange.endDate = date;
+          entry.dateRange.endDate = date?.toISOString();
         }
-      })
-    ),
-}));
+      }),
+  };
+});

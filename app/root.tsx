@@ -12,6 +12,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { useResumeStore } from './lib/stores';
 import { useEducationStore } from './lib/stores/education.store';
 import { useProfileStore } from './lib/stores/profile.store';
+import { useWorkExperienceStore } from './lib/stores/work-experience.store';
 import { DEFAULT_RESUME, Resume } from './lib/types';
 import { getLocalResume, storeLocalResume } from './lib/utils';
 
@@ -33,11 +34,17 @@ export function Layout({ children }: { children: React.ReactNode }) {
   const educationStore = useEducationStore();
   const education = useEducationStore((state) => state.education);
 
+  const workExperienceStore = useWorkExperienceStore();
+  const workExperience = useWorkExperienceStore(
+    (state) => state.workExperience
+  );
+
   const loadResume = () => {
     const localResume = getLocalResume();
     if (localResume) {
       profileStore.setProfile(localResume.profile);
       educationStore.setEducation(localResume.education);
+      workExperienceStore.setWorkExperience(localResume.workExperience);
 
       setFoundResume(true);
     }
@@ -60,9 +67,10 @@ export function Layout({ children }: { children: React.ReactNode }) {
         ...DEFAULT_RESUME,
         profile: profile,
         education: education,
+        workExperience: workExperience,
       });
     }
-  }, [profile, education, foundResume]);
+  }, [profile, education, workExperience, foundResume]);
 
   useEffect(() => {
     if (resume) {

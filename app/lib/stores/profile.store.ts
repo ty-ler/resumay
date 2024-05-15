@@ -17,47 +17,45 @@ export type ProfileActions = {
 
 export type ProfileStore = ProfileState & ProfileActions;
 
-export const useProfileStore = create<ProfileStore>((set) => ({
-  profile: {
-    fullName: '',
-    email: '',
-    location: '',
-    phone: '',
-    linkUrl: '',
-  },
-  setProfile: (profile) =>
-    set((state) => ({
-      ...state,
-      profile,
-    })),
-  setEmail: (email) =>
-    set(
-      produce((state: ProfileState) => {
+export const useProfileStore = create<ProfileStore>((set) => {
+  const modify = (modify: (state: ProfileState) => void) =>
+    set(produce((state) => modify(state)));
+
+  return {
+    profile: {
+      fullName: '',
+      email: '',
+      location: '',
+      phone: '',
+      linkUrl: '',
+    },
+    setProfile: (profile) =>
+      modify((state) => {
+        state.profile = profile;
+      }),
+    // set((state) => ({
+    //   ...state,
+    //   profile,
+    // })),
+    setEmail: (email) =>
+      modify((state: ProfileState) => {
         state.profile.email = email;
-      })
-    ),
-  setFullName: (fullName) =>
-    set(
-      produce((state: ProfileState) => {
+      }),
+    setFullName: (fullName) =>
+      modify((state: ProfileState) => {
         state.profile.fullName = fullName;
-      })
-    ),
-  setPhone: (phone) =>
-    set(
-      produce((state: ProfileState) => {
+      }),
+    setPhone: (phone) =>
+      modify((state: ProfileState) => {
         state.profile.phone = phone;
-      })
-    ),
-  setLocation: (location) =>
-    set(
-      produce((state: ProfileState) => {
+      }),
+    setLocation: (location) =>
+      modify((state: ProfileState) => {
         state.profile.location = location;
-      })
-    ),
-  setLinkUrl: (linkUrl) =>
-    set(
-      produce((state: ProfileState) => {
+      }),
+    setLinkUrl: (linkUrl) =>
+      modify((state: ProfileState) => {
         state.profile.linkUrl = linkUrl;
-      })
-    ),
-}));
+      }),
+  };
+});

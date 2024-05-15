@@ -83,11 +83,11 @@ export default function EditorEducationEntry({
     store.setSchoolGPA(index, value);
   };
 
-  const handleChangeStartDate = (date: Date) => {
+  const handleChangeStartDate = (date: Date | undefined) => {
     store.setSchoolStartDate(index, date);
   };
 
-  const handleChangeEndDate = (date: Date) => {
+  const handleChangeEndDate = (date: Date | undefined) => {
     store.setSchoolEndDate(index, date);
   };
 
